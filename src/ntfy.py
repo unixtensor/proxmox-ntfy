@@ -1,16 +1,11 @@
 import subprocess
-import main
-import time
 
-last_ntfy_send: float = time.time()
+class Ntfy:
+	def __init__(self, server: str):
+		self.server = server
 
-def send(message: str):
-	try:
-		if main.ntfy_url:
-			global last_ntfy_send
-			last_ntfy_send = time.time()
-			subprocess.run(["curl", "-d", f"\"{message}\"", main.ntfy_url], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-		else:
-			print("Ntfy send: url is not configured.")
-	except Exception as err:
-		print(f"Ntfy failed. {err}")
+	def send(self, message: str):
+		try:
+			subprocess.run(["curl", "-d", f"\"{message}\"", self.server], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+		except Exception as err:
+			print(f"Ntfy failed. {err}")

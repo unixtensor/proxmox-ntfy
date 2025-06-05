@@ -1,34 +1,33 @@
-import argparse
 import time
 
 import package
+import cli
 import cpu
 
-from typing import Optional
+from ntfy import Ntfy
 
-clock_interval_secs: int = 1
-last_check_debounce: int = 60 # Seconds
-cpu_critical_temp:   int = 80
-cpu_warning_temp:    int = 70
+def start(
+	cpu_critical_temp: int,
+	cpu_warning_temp: int,
+	ntfy_server: str,
+	interval: int
+):
+	ntfy = Ntfy(ntfy_server)
+	ntfy_cpu_temp_monitor = cpu.Tempature(ntfy, cpu_critical_temp, cpu_warning_temp)
 
-ntfy_url: Optional[str] = None
-_ntfy_configure_prompt = """Please configure an ntfy url before starting.
-\033[4mExamples:\033[0m
-\033[32mpython3 main.py --url=10.0.13.37:42069
-python3 main.py --url=ntfy.domain.com\033[0m"""
+	print(f"Started. {time.time()}")
+	print("Ntfy monitoring software is now listening.")
 
-def cli_interface() -> bool:
-	...
-
-def start():
-	print(f"Working! {time.time()}")
 	while True:
-		cpu.temperature_check()
-		time.sleep(clock_interval_secs)
+		ntfy_cpu_temp_monitor.ntfy_check()
+		time.sleep(interval)
 
 if __name__ == "__main__":
 	if package.installed_list(["lm-sensors", "ntfy", "curl"]):
-		if cli_interface():
-			start()
-		else:
-			print(_ntfy_configure_prompt)
+		cli_args = cli.interface()
+		start(
+			cli_args.cpu_temp_critical,
+			cli_args.cpu_temp_warning,
+			cli_args.server,
+			cli_args.update_rate,
+		)
