@@ -52,8 +52,9 @@ def clock_check_cpu():
 		elif cpu_temp >= cpu_warning_temp:
 			ntfy_send(f"🌡️ CPU tempature is at a high tempature. {cpu_temp}")
 
-if packages_installed(["lm-sensors", "ntfy", "curl"]):
-	print(f"Working! {time.time()}")
-	while True:
-		clock_check_cpu()
-		time.sleep(clock_interval_secs)
+if __name__ == "__main__":
+	if packages_installed(["lm-sensors", "ntfy", "curl"]):
+		print(f"Working! {time.time()}")
+		while True:
+			clock_check_cpu()
+			time.sleep(clock_interval_secs)
