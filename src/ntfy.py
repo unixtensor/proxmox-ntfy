@@ -1,4 +1,4 @@
-import subprocess
+import requests
 
 class Ntfy:
 	def __init__(self, server: str):
@@ -6,6 +6,6 @@ class Ntfy:
 
 	def send(self, message: str):
 		try:
-			subprocess.run(["curl", "-d", f"\"{message}\"", self.server], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+			requests.post(self.server, data=message)
 		except Exception as err:
 			print(f"Ntfy failed. {err}")

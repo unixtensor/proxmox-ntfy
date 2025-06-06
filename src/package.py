@@ -11,9 +11,3 @@ def installed(package_name: str) -> Optional[bool]:
 	except Exception as err:
 		print(err)
 		return None
-
-def installed_list(package_name_list: list[str]) -> bool:
-	for pkg_name in package_name_list:
-		if not installed(pkg_name):
-			return False
-	return True
