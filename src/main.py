@@ -1,16 +1,10 @@
 import time
-import sys
 
 import package
 import cli
 import cpu
 
 from ntfy import Ntfy
-
-_ntfy_configure_prompt = """\033[4mPlease configure an ntfy url before starting.\033[0m
-Examples:
-\033[32mpython3 main.py 10.0.13.37:42069
-python3 main.py ntfy.domain.com\033[0m"""
 
 def start(
 	cpu_critical_temp: int,
@@ -30,13 +24,13 @@ def start(
 
 if __name__ == "__main__":
 	if package.installed("lm-sensors"):
-		if len(sys.argv) > 1:
-			cli_args = cli.interface()
+		cli_args    = cli.Interface()
+		parsed      = cli_args.parsed_args()
+		ntfy_server = cli_args.argv_1()
+		if ntfy_server:
 			start(
-				cli_args.cpu_temp_critical,
-				cli_args.cpu_temp_warning,
-				sys.argv[1],
-				cli_args.update_rate,
+				parsed.cpu_temp_critical,
+				parsed.cpu_temp_warning,
+				ntfy_server,
+				parsed.update_rate,
 			)
-		else:
-			print(_ntfy_configure_prompt)
