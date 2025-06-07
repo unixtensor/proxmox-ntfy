@@ -8,24 +8,28 @@ from datetime import datetime
 from typing import TypedDict
 from ntfy import Ntfy
 
-_monitoring_prompt = f"""{datetime.fromtimestamp(time.time())}
-Ntfy monitoring software is now listening.
-
-Source code available at:
-<https://github.com/unixtensor/proxmox-ntfy>
-<https://git.rhpidfyre.io/rhpidfyre/proxmox-ntfy>"""
-
 class Config(TypedDict):
 	cpu_temp_check_disabled: bool
 	cpu_warning_temp:        int
 	update_interval:         int
 	ntfy_server_url:         str
 
+def start_prompt(server_url: str) -> str:
+	return f"""{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+Listening and sending notifications to: \033[32m{server_url}\033[0m.
+
+Source code available at:
+<https://github.com/unixtensor/proxmox-ntfy>
+<https://git.rhpidfyre.io/rhpidfyre/proxmox-ntfy>
+------"""
+
 def start(config: Config):
 	ntfy = Ntfy(config["ntfy_server_url"])
 	ntfy_cpu_temp_monitor = cpu.Tempature(ntfy, config["cpu_warning_temp"])
 
-	print(_monitoring_prompt)
+	print(config)
+	print(start_prompt(config["ntfy_server_url"]))
+
 	while True:
 		if not config["cpu_temp_check_disabled"]:
 			ntfy_cpu_temp_monitor.ntfy_check()

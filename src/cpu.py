@@ -7,9 +7,8 @@ from typing import Optional
 from ntfy import Ntfy
 
 _time_now = time.time()
-last_cpu_check_warning:  float = _time_now
-
-last_check_debounce: int = 120 # Seconds
+last_cpu_check_warning: float = _time_now
+last_check_debounce:    int   = 120 # Seconds
 
 class Tempature:
 	cpu_temp_warning_message: str = "🌡️ CPU is at a high tempature."

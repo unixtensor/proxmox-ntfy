@@ -1,12 +1,5 @@
 import argparse
 
-_ntfy_configure_prompt = """\033[4mPlease configure an ntfy url before starting.\033[0m
-Examples:
-\033[32mpython3 main.py 10.0.13.37:42069
-python3 main.py ntfy.domain.com\033[0m
-
-Use \033[32m-h\033[0m or \033[32m--help\033[0m for a full list of options."""
-
 def Interface():
 	parser = argparse.ArgumentParser()
 	parser.add_argument("server_address", help="The ntfy server address.")
