@@ -8,7 +8,7 @@ from ntfy import Ntfy
 
 _time_now = time.time()
 last_cpu_check_warning: float = _time_now
-last_check_debounce:    int   = 120 # Seconds
+cpu_temp_queue_check:   int   = 120 # Seconds
 
 class Tempature:
 	cpu_temp_warning_message: str = "🌡️ CPU is at a high tempature."
@@ -26,12 +26,12 @@ class Tempature:
 					return float(match.group(1))
 		return None
 
-	def __check_time(self, last_check: float) -> bool:
-		return (time.time() - last_check) > last_check_debounce * 1000
+	def __queue_time(self, last_check: float) -> bool:
+		return (time.time() - last_check) > cpu_temp_queue_check * 1000
 
 	def ntfy_check(self):
 		cpu_temp = self.get()
 		if cpu_temp:
 			cpu_temp = math.floor(cpu_temp)
-			if cpu_temp >= self.cpu_warning_temp and self.__check_time(last_cpu_check_warning):
+			if cpu_temp >= self.cpu_warning_temp and self.__queue_time(last_cpu_check_warning):
 				self.ntfy.send(f"{Tempature.cpu_temp_warning_message} {cpu_temp} C")

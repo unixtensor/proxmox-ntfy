@@ -11,8 +11,8 @@ class Ntfy:
 		self.server = server
 
 	def send(self, message: str):
-		print_t(message)
+		print_t("Ntfy OUT: " + message)
 		try:
 			requests.post(self.server, data=message)
 		except Exception as err:
-			print_t(f"Ntfy failed. \033[31m{err}\033[0m")
+			print_t(f"\033[31m{err}\033[0m")
