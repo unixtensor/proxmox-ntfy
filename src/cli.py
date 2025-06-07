@@ -3,7 +3,7 @@ import argparse
 import cpu
 
 def Interface():
-	parser = argparse.ArgumentParser()
+	parser = argparse.ArgumentParser(description="Proxmox monitoring tool for phone notifications using ntfy.sh")
 	parser.add_argument("server_address", help="The ntfy server address.")
 
 	parser.add_argument("--disable-uptime-notifys", action="store_true", help="Disable uptime notifications.")
