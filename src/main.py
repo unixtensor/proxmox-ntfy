@@ -21,6 +21,7 @@ class Config(TypedDict):
 	cpu_temp_warning_message: str
 	cpu_temp_check_disabled:  bool
 	startup_ping_disabled:    bool
+	startup_ping_message:     str
 	cpu_warning_temp:         int
 	update_interval:          int
 	ntfy_server_url:          str
@@ -43,7 +44,8 @@ class Init:
 		print(f"{self.config}\n" + start_prompt(self.config["ntfy_server_url"]))
 
 		if not self.config["startup_ping_disabled"]:
-			self.ntfy.send("started")
+			self.ntfy.send(self.config["startup_ping_message"])
+
 		self.__listen()
 
 if __name__ == "__main__":
@@ -53,6 +55,7 @@ if __name__ == "__main__":
 			"cpu_temp_warning_message": cli_args.cpu_temp_warning_message,
 			"cpu_temp_check_disabled":  cli_args.disable_cpu_temp,
 			"startup_ping_disabled":    cli_args.disable_startup_ping,
+			"startup_ping_message":     cli_args.startup_ping_message,
 			"cpu_warning_temp":         cli_args.cpu_temp_warning,
 			"update_interval":          cli_args.update_rate,
 			"ntfy_server_url":          cli_args.server_address,
