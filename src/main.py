@@ -22,6 +22,7 @@ class Config(TypedDict):
 	cpu_temp_check_disabled:  bool
 	startup_ping_disabled:    bool
 	startup_ping_message:     str
+	ntfy_logs_disabled:       bool
 	cpu_warning_temp:         int
 	update_interval:          int
 	ntfy_server_url:          str
@@ -29,7 +30,7 @@ class Config(TypedDict):
 class Init:
 	def __init__(self, config: Config):
 		self.config           = config
-		self.ntfy             = Ntfy(config["ntfy_server_url"])
+		self.ntfy             = Ntfy(config["ntfy_server_url"], config["ntfy_logs_disabled"])
 		self.monitor_cpu_temp = cpu.Tempature(self.ntfy, config["cpu_warning_temp"])
 
 		cpu.Tempature.cpu_temp_warning_message = config["cpu_temp_warning_message"]
@@ -56,7 +57,8 @@ if __name__ == "__main__":
 			"cpu_temp_check_disabled":  cli_args.disable_cpu_temp,
 			"startup_ping_disabled":    cli_args.disable_startup_ping,
 			"startup_ping_message":     cli_args.startup_ping_message,
+			"ntfy_logs_disabled":       cli_args.disable_ntfy_logs,
 			"cpu_warning_temp":         cli_args.cpu_temp_warning,
 			"update_interval":          cli_args.update_rate,
-			"ntfy_server_url":          cli_args.server_address,
+			"ntfy_server_url":          cli_args.server_address + "/" + cli_args.topic, #Heh.
 		}).start()
