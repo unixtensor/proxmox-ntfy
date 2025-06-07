@@ -1,7 +1,4 @@
 import argparse
-import sys
-
-from typing import Optional
 
 _ntfy_configure_prompt = """\033[4mPlease configure an ntfy url before starting.\033[0m
 Examples:
@@ -16,8 +13,7 @@ def Interface():
 
 	parser.add_argument("--disable-uptime-notifys", action="store_true", help="Disable uptime notifications.")
 	parser.add_argument("--disable-cpu-temp",       action="store_true", help="Disable notifications for CPU tempature.")
-	parser.add_argument("--cpu-temp-critical", type=int,  default=80, help="CPU tempature for the crtitical alert. default = 80")
-	parser.add_argument("--cpu-temp-warning",  type=int,  default=70, help="CPU tempature for the warning alert. default = 70")
-	parser.add_argument("--update-rate",       type=int,  default=1,  help="How often updates happen in seconds. default = 1")
+	parser.add_argument("--cpu-temp-warning", type=int,  default=70, help="CPU tempature for the warning alert. default = 70")
+	parser.add_argument("--update-rate",      type=int,  default=1,  help="How often updates happen in seconds. default = 1")
 
 	return parser.parse_args()

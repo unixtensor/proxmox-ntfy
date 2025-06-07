@@ -8,9 +8,8 @@ class Ntfy:
 		self.server = server
 
 	def send(self, message: str):
+		print(f"[{datetime.fromtimestamp(time.time())}]: {message}")
 		try:
-			pretty_date_time = datetime.fromtimestamp(time.time())
-			print(f"[{pretty_date_time}]: {message}")
 			requests.post(self.server, data=message)
 		except Exception as err:
 			print(f"Ntfy failed. {err}")
