@@ -1,10 +1,6 @@
 import requests
 
-from datetime import datetime
-
-def print_t(out: str):
-	t = datetime.now()
-	print(f"({t.strftime('%Y-%m-%d')})[{t.strftime('%H:%M:%S')}]: " + out)
+from print_t import print_t
 
 class Ntfy:
 	def __init__(self, server: str):

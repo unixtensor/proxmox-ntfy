@@ -3,8 +3,9 @@ import time
 import math
 import re
 
-from typing import Optional
-from ntfy import Ntfy
+from print_t import print_t
+from typing  import Optional
+from ntfy    import Ntfy
 
 _time_now = time.time()
 last_cpu_check_warning: float = _time_now
@@ -35,3 +36,5 @@ class Tempature:
 			cpu_temp = math.floor(cpu_temp)
 			if cpu_temp >= self.cpu_warning_temp and self.__queue_time(last_cpu_check_warning):
 				self.ntfy.send(f"{Tempature.cpu_temp_warning_message} {cpu_temp} C")
+		else:
+			print_t("\033[31mCannot get a feasible tempature value for the CPU. (lm-sensors)\033[0m")

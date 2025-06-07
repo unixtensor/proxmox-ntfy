@@ -5,8 +5,8 @@ import cli
 import cpu
 
 from datetime import datetime
-from typing import TypedDict
-from ntfy import Ntfy
+from typing   import TypedDict
+from ntfy     import Ntfy
 
 def start_prompt(server_url: str) -> str:
 	return f"""{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
