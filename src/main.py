@@ -13,15 +13,16 @@ def start_prompt(server_url: str) -> str:
 Listening and sending notifications to: \033[32m{server_url}\033[0m.
 
 Source code available at:
-<https://github.com/unixtensor/proxmox-ntfy>
+* <https://github.com/unixtensor/proxmox-ntfy>
 <https://git.rhpidfyre.io/rhpidfyre/proxmox-ntfy>
 ------"""
 
 class Config(TypedDict):
+	cpu_temp_warning_timeout: int
 	cpu_temp_warning_message: str
 	cpu_temp_check_disabled:  bool
-	startup_ping_disabled:    bool
-	startup_ping_message:     str
+	startup_notify_disabled:  bool
+	startup_notify_message:   str
 	ntfy_logs_disabled:       bool
 	cpu_warning_temp:         int
 	update_interval:          int
@@ -33,7 +34,8 @@ class Init:
 		self.ntfy             = Ntfy(config["ntfy_server_url"], config["ntfy_logs_disabled"])
 		self.monitor_cpu_temp = cpu.Tempature(self.ntfy, config["cpu_warning_temp"])
 
-		cpu.Tempature.cpu_temp_warning_message = config["cpu_temp_warning_message"]
+		cpu.Tempature.warning_message = config["cpu_temp_warning_message"]
+		cpu.Tempature.timeout_check   = config["cpu_temp_warning_timeout"]
 
 	def __listen(self):
 		while True:
@@ -44,8 +46,8 @@ class Init:
 	def start(self):
 		print(f"{self.config}\n" + start_prompt(self.config["ntfy_server_url"]))
 
-		if not self.config["startup_ping_disabled"]:
-			self.ntfy.send(self.config["startup_ping_message"])
+		if not self.config["startup_notify_disabled"]:
+			self.ntfy.send(self.config["startup_notify_message"])
 
 		self.__listen()
 
@@ -53,12 +55,13 @@ if __name__ == "__main__":
 	if package.installed("lm-sensors"):
 		cli_args = cli.Interface()
 		Init({
+			"cpu_temp_warning_timeout": cli_args.cpu_temp_warning_timeout,
 			"cpu_temp_warning_message": cli_args.cpu_temp_warning_message,
 			"cpu_temp_check_disabled":  cli_args.disable_cpu_temp,
-			"startup_ping_disabled":    cli_args.disable_startup_ping,
-			"startup_ping_message":     cli_args.startup_ping_message,
+			"startup_notify_disabled":  cli_args.disable_startup_notify,
+			"startup_notify_message":   cli_args.startup_notify_message,
 			"ntfy_logs_disabled":       cli_args.disable_ntfy_logs,
 			"cpu_warning_temp":         cli_args.cpu_temp_warning,
 			"update_interval":          cli_args.update_rate,
-			"ntfy_server_url":          cli_args.server_address + "/" + cli_args.topic, #Heh.
+			"ntfy_server_url":          cli_args.server_address_no_topic + "/" + cli_args.topic, #Heh.
 		}).start()
