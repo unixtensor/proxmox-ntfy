@@ -1,4 +1,5 @@
 import time
+import re
 
 import package
 import cli
@@ -17,6 +18,32 @@ Source code available at:
 <https://git.rhpidfyre.io/rhpidfyre/proxmox-ntfy>
 ------"""
 
+class Address:
+	def __init__(self, address: str):
+		self.address = address
+
+	def valid(self) -> bool:
+		if re.search(r"^\d+[.]\d+[.]\d+[.]\d+", self.address):
+			return True
+		elif re.search(r"^(https|http)://.+$", self.address):
+			return True
+		return False
+
+	def format(self, topic: str) -> str:
+		return self.address + "/" + topic
+
+	def not_valid_prompt(self) -> str:
+		return f"""The address "{self.address}" is not valid.
+Accepted address types:
+\033[32m10.0.0.69:42069
+http://domain.com
+https://domain.com\033[0m
+
+Address with a topic:
+\033[32m10.0.0.69:42069 -t|--topic example_topic
+http://domain.com -t|--topic example_topic
+https://domain.com -t|--topic example_topic\033[0m"""
+
 class Config(TypedDict):
 	cpu_temp_warning_timeout: int
 	cpu_temp_warning_message: str
@@ -33,7 +60,6 @@ class Init:
 		self.config           = config
 		self.ntfy             = Ntfy(config["ntfy_server_url"], config["ntfy_logs_disabled"])
 		self.monitor_cpu_temp = cpu.Tempature(self.ntfy, config["cpu_warning_temp"])
-
 		cpu.Tempature.warning_message = config["cpu_temp_warning_message"]
 		cpu.Tempature.timeout_check   = config["cpu_temp_warning_timeout"]
 
@@ -48,12 +74,12 @@ class Init:
 
 		if not self.config["startup_notify_disabled"]:
 			self.ntfy.send(self.config["startup_notify_message"])
-
 		self.__listen()
 
-if __name__ == "__main__":
-	if package.installed("lm-sensors"):
-		cli_args = cli.Interface()
+def main():
+	cli_args = cli.Interface()
+	address  = Address(cli_args.server_address_no_topic)
+	if address.valid():
 		Init({
 			"cpu_temp_warning_timeout": cli_args.cpu_temp_warning_timeout,
 			"cpu_temp_warning_message": cli_args.cpu_temp_warning_message,
@@ -63,5 +89,11 @@ if __name__ == "__main__":
 			"ntfy_logs_disabled":       cli_args.disable_ntfy_logs,
 			"cpu_warning_temp":         cli_args.cpu_temp_warning,
 			"update_interval":          cli_args.update_rate,
-			"ntfy_server_url":          cli_args.server_address_no_topic + "/" + cli_args.topic, #Heh.
+			"ntfy_server_url":          address.format(cli_args.topic)
 		}).start()
+	else:
+		print(address.not_valid_prompt())
+
+if __name__ == "__main__":
+	if package.installed("lm-sensors"):
+		main()
