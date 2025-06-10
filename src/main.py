@@ -23,9 +23,7 @@ class Address:
 		self.address = address
 
 	def valid(self) -> bool:
-		if re.search(r"^\d+[.]\d+[.]\d+[.]\d+", self.address):
-			return True
-		elif re.search(r"^(https|http)://.+$", self.address):
+		if re.search(r"^\d+[.]\d+[.]\d+[.]\d+|^(https|http)://.+$", self.address):
 			return True
 		return False
 
