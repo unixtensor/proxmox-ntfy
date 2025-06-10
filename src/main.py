@@ -22,13 +22,14 @@ class Address:
 	def __init__(self, address: str):
 		self.address = address
 
-	def valid(self) -> bool:
-		if re.search(r"^\d+[.]\d+[.]\d+[.]\d+|^(https|http)://.+$", self.address):
-			return True
-		return False
+	def is_valid(self) -> bool:
+		return re.search(r"^\d+[.]\d+[.]\d+[.]\d+|^(https|http)://.+$", self.address) != None
 
 	def format(self, topic: str) -> str:
-		return self.address + "/" + topic
+		addr = self.address
+		if self.address[len(self.address)-1] != "/":
+			addr += "/"
+		return addr + topic
 
 	def not_valid_prompt(self) -> str:
 		return f"""The address "{self.address}" is not valid.
@@ -38,9 +39,9 @@ http://domain.com
 https://domain.com\033[0m
 
 Address with a topic:
-\033[32m10.0.0.69:42069 -t|--topic example_topic
-http://domain.com -t|--topic example_topic
-https://domain.com -t|--topic example_topic\033[0m"""
+\033[32m10.0.0.69:42069\033[0m -t|--topic \033[32mexample_topic\033[0m
+\033[32mhttp://domain.com\033[0m -t|--topic \033[32mexample_topic\033[0m
+\033[32mhttps://domain.com\033[0m -t|--topic \033[32mexample_topic\033[0m"""
 
 class Config(TypedDict):
 	cpu_temp_warning_timeout: int
@@ -77,7 +78,7 @@ class Init:
 def main():
 	cli_args = cli.Interface()
 	address  = Address(cli_args.server_address_no_topic)
-	if address.valid():
+	if address.is_valid():
 		Init({
 			"cpu_temp_warning_timeout": cli_args.cpu_temp_warning_timeout,
 			"cpu_temp_warning_message": cli_args.cpu_temp_warning_message,
