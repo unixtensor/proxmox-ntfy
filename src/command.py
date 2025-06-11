@@ -2,7 +2,7 @@ import subprocess
 
 from typing import Optional
 
-def installed(package_name: str) -> Optional[bool]:
+def package_installed(package_name: str) -> Optional[bool]:
 	try:
 		installed = subprocess.run(["dpkg", "-s", package_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE).returncode == 0
 		if not installed:
@@ -11,3 +11,4 @@ def installed(package_name: str) -> Optional[bool]:
 	except Exception as err:
 		print(err)
 		return None
+

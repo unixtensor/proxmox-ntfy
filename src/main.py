@@ -1,7 +1,7 @@
 import time
 import re
 
-import package
+import command
 import cli
 import cpu
 
@@ -94,5 +94,5 @@ def main():
 		print(address.not_valid_prompt())
 
 if __name__ == "__main__":
-	if package.installed("lm-sensors"):
+	if command.package_installed("lm-sensors"):
 		main()
