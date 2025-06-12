@@ -28,7 +28,7 @@ class Ntfy:
 		if extra_headers:
 			headers.update(extra_headers)
 		if not self.logging_disabled:
-			print_t("Ntfy OUT: " + message)
+			print_t(f"Ntfy OUT: \033[0;35mtitle\033[0m={title} \033[0;35mmessage\033[0m={message} \033[0;35mheaders\033[0m={headers}")
 		try:
 			requests.post(self.server, data=message.encode(encoding="utf-8"), headers=headers)
 		except Exception as err:

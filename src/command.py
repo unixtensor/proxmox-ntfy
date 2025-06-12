@@ -9,6 +9,8 @@ def package_installed(package_name: str) -> Optional[bool]:
 			print(f"Package \"{package_name}\" not installed.")
 		return installed
 	except Exception as err:
-		print(err)
+		print(f"\033[31m{err}\033[0m")
 		return None
 
+def uname() -> str:
+	return subprocess.run(["uname", "-a"], capture_output=True, text=True).stdout.strip()
