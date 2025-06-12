@@ -18,8 +18,8 @@ def timeout_expired(check: float, timeout: int) -> bool:
 	return (time.time() - check) > timeout
 
 class Tempature:
-	timeout_check_critical: int = 120 # Seconds
-	timeout_check_warn:     int = 300 # Seconds
+	timeout_check_critical: int = 600 # Seconds
+	timeout_check_warn:     int = 3600 # Seconds
 	critical_message:       str = "🔥 CPU is at a very high tempature."
 	warning_message:        str = "🌡️ CPU is at a high tempature."
 	thermal_critical_c:     int = 80
