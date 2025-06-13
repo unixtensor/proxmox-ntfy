@@ -1,38 +1,28 @@
 import time
-import re
 
 import command
 import cli
 import cpu
 
 from datetime import datetime
+from address  import Address
 from typing   import TypedDict
 from ntfy     import Ntfy
 
-def start_prompt(server_url: str) -> str:
-	return f"""{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-Listening and sending notifications to: \033[32m{server_url}\033[0m.
+class Prompt:
+	@staticmethod
+	def start(address: str) -> str:
+			return f"""{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+Listening and sending notifications to: \033[32m{address}\033[0m.
 
 Source code available at:
 * <https://github.com/unixtensor/proxmox-ntfy>
 <https://git.rhpidfyre.io/rhpidfyre/proxmox-ntfy>
 ------"""
 
-class Address:
-	def __init__(self, address: str):
-		self.address = address
-
-	def is_valid(self) -> bool:
-		return re.search(r"^\d+[.]\d+[.]\d+[.]\d+|^(https|http)://.+$", self.address) != None
-
-	def format(self, topic: str) -> str:
-		addr = self.address
-		if self.address[len(self.address)-1] != "/":
-			addr += "/"
-		return addr + topic
-
-	def not_valid_prompt(self) -> str:
-		return f"""The address "{self.address}" is not valid.
+	@staticmethod
+	def address_not_valid(address: str) -> str:
+			return f"""The address "{address}" is not valid.
 Accepted address types:
 \033[32m10.0.0.69:42069
 http://domain.com
@@ -82,9 +72,6 @@ class Init:
 		if self.config["cpu_warning_temp"] >= self.config["cpu_temp_critical"]:
 			print("CPU warning tempature cannot be greater than or equal to the crtitical tempature.")
 			return
-
-		print(f"{self.config}\n" + start_prompt(self.config["ntfy_server_url"]))
-
 		if not self.config["startup_notify_disabled"]:
 			self.__start_notify()
 		self.__listen()
@@ -93,6 +80,9 @@ def main():
 	cli_args = cli.Interface()
 	address  = Address(cli_args.server_address_no_topic)
 	if address.is_valid():
+		formatted_address = address.format(cli_args.topic)
+		print(Prompt.start(formatted_address))
+
 		Init({
 			"cpu_temp_critical_timeout": cli_args.cpu_temp_critical_timeout,
 			"cpu_temp_critical_message": cli_args.cpu_temp_critical_message,
@@ -105,10 +95,10 @@ def main():
 			"cpu_temp_critical":         cli_args.cpu_temp_critical,
 			"cpu_warning_temp":          cli_args.cpu_temp_warning,
 			"update_interval":           cli_args.update_rate,
-			"ntfy_server_url":           address.format(cli_args.topic)
+			"ntfy_server_url":           formatted_address
 		}).start()
 	else:
-		print(address.not_valid_prompt())
+		print(Prompt.address_not_valid(cli_args.server_address_no_topic))
 
 if __name__ == "__main__":
 	if command.package_installed("lm-sensors"):
