@@ -3,13 +3,13 @@
 <img src="docs/IMG_20250609_174259.jpg" width="500"/>
 
 # Prerequisites
-* Proxmox (extensive use of the `Proxmoxer` API)
-* Terminal multiplexer (such as `tmux`) [Optional]
+* [Ntfy](https://ntfy.sh/)
+* [Proxmoxer](https://pypi.org/project/proxmoxer/)
 * python3
-* python3-requests (It's possible to use `curl` instead with Python `subprocess`) [*Optional]
+* python3-requests (It's possible to use `curl` instead with Python [subprocess](https://docs.python.org/3/library/subprocess.html)) [*Optional]
 
 # Deploying
-This example will utilize `tmux`:
+This example will utilize [tmux](https://github.com/tmux/tmux/wiki):
 
 1. Create a new named session, "ntfy" will be used as an example:
 ```
