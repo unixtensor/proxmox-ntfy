@@ -30,5 +30,5 @@ Detatch from the current tmux session with `<Ctrl b><d>`, the script should now 
 ## Updating
 You can update the script without cloning the project:
 ```
-git pull --depth=1 --rebase
+git pull --depth=1 --ff-only
 ```
