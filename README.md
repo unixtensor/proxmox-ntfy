@@ -2,6 +2,8 @@
 ### Monitor your proxmox datacenter with phone notifications
 <img src="docs/IMG_20250609_174259.jpg" width="500"/>
 
+Right now only CPU tempatures are monitored.
+
 # Prerequisites
 * [Ntfy](https://ntfy.sh/)
 * [Proxmoxer](https://pypi.org/project/proxmoxer/)
