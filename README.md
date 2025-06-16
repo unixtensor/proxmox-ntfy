@@ -28,7 +28,7 @@ python3 ./proxmox-ntfy/src/main.py http://your.domain.com/
 Detatch from the current tmux session with `<Ctrl b><d>`, the script should now be deployed and running in the background.
 
 ## Updating
-You can update the script without cloning the project:
+You can update the script without cloning the project using git:
 ```
-git pull --depth=1 --rebase --force
+git pull
 ```
