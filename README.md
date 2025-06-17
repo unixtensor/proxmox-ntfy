@@ -6,9 +6,9 @@ Right now only CPU tempatures are monitored.
 
 # Prerequisites
 * [Ntfy](https://ntfy.sh/)
-* [Proxmoxer](https://pypi.org/project/proxmoxer/)
 * python3
-* python3-requests (It's possible to use `curl` instead with Python [subprocess](https://docs.python.org/3/library/subprocess.html)) [*Optional]
+* python3-requests
+* python3-psutil
 
 # Deploying
 This example will utilize [tmux](https://github.com/tmux/tmux/wiki):
