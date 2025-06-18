@@ -39,11 +39,13 @@ class Config(TypedDict):
 	cpu_temp_warning_timeout:  int
 	cpu_temp_warning_message:  str
 	cpu_temp_check_disabled:   bool
+	cpu_temp_critical:         int
+	cpu_warning_temp:          int
+	cpu_temp_zone_label:       str
+	cpu_temp_zone:             str
 	startup_notify_disabled:   bool
 	startup_notify_message:    str
 	ntfy_logs_disabled:        bool
-	cpu_temp_critical:         int
-	cpu_warning_temp:          int
 	update_interval:           int
 	ntfy_server_url:           str
 
@@ -51,7 +53,7 @@ class Init:
 	def __init__(self, config: Config):
 		self.config           = config
 		self.ntfy             = Ntfy(config["ntfy_server_url"], config["ntfy_logs_disabled"])
-		self.monitor_cpu_temp = cpu.Tempature(self.ntfy)
+		self.monitor_cpu_temp = cpu.Tempature(self.ntfy, config["cpu_temp_zone"], config["cpu_temp_zone_label"])
 		cpu.Tempature.warning_message    = config["cpu_temp_warning_message"]
 		cpu.Tempature.timeout_check_warn = config["cpu_temp_warning_timeout"]
 		cpu.Tempature.thermal_warn_c     = config["cpu_warning_temp"]
@@ -89,11 +91,13 @@ def main():
 			"cpu_temp_warning_timeout":  cli_args.cpu_temp_warning_timeout,
 			"cpu_temp_warning_message":  cli_args.cpu_temp_warning_message,
 			"cpu_temp_check_disabled":   cli_args.disable_cpu_temp,
+			"cpu_temp_critical":         cli_args.cpu_temp_critical,
+			"cpu_warning_temp":          cli_args.cpu_temp_warning,
+			"cpu_temp_zone_label":       cli_args.cpu_temp_zone_label,
+			"cpu_temp_zone":             cli_args.cpu_temp_zone,
 			"startup_notify_disabled":   cli_args.disable_startup_notify,
 			"startup_notify_message":    cli_args.startup_notify_message,
 			"ntfy_logs_disabled":        cli_args.disable_ntfy_logs,
-			"cpu_temp_critical":         cli_args.cpu_temp_critical,
-			"cpu_warning_temp":          cli_args.cpu_temp_warning,
 			"update_interval":           cli_args.update_rate,
 			"ntfy_server_url":           formatted_address
 		}).start()
@@ -101,5 +105,4 @@ def main():
 		print(Prompt.address_not_valid(cli_args.server_address_no_topic))
 
 if __name__ == "__main__":
-	if command.package_installed("lm-sensors"):
-		main()
+	main()

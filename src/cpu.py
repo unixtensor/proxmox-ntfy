@@ -1,7 +1,6 @@
-import subprocess
+import psutil
 import time
 import math
-import re
 
 from print_t import print_t
 from typing  import Optional
@@ -25,16 +24,15 @@ class Tempature:
 	thermal_critical_c:     int = 80
 	thermal_warn_c:         int = 70
 
-	def __init__(self, ntfy_instance: Ntfy):
+	def __init__(self, ntfy_instance: Ntfy, cpu_temp_zone: str, cpu_temp_zone_label: str):
 		self.ntfy = ntfy_instance
+		self.cpu_temp_zone = cpu_temp_zone
+		self.cpu_temp_zone_label = cpu_temp_zone_label
 
 	def get(self) -> Optional[float]:
-		sensors_out = subprocess.check_output(["sensors"]).decode()
-		for line in sensors_out.splitlines():
-			if "Tctl" in line:
-				match = re.search(r"(\d+\.\d+)°C", line)
-				if match:
-					return float(match.group(1))
+		for entry in psutil.sensors_temperatures().get(self.cpu_temp_zone, []):
+			if entry.label == self.cpu_temp_zone_label:
+				return entry.current
 		return None
 
 	def ntfy_check(self):
