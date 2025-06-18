@@ -11,4 +11,4 @@ class Address:
 		addr = self.address
 		if self.address[len(self.address)-1] != "/":
 			addr += "/"
-		return addr + topic
+		return addr + topic.replace(" ", "_")
