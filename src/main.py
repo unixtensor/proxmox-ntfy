@@ -6,7 +6,6 @@ import cpu
 
 from datetime import datetime
 from address  import Address
-from typing   import TypedDict
 from ntfy     import Ntfy
 
 class Prompt:
@@ -33,24 +32,8 @@ Address with a topic:
 \033[32mhttp://domain.com\033[0m -t|--topic \033[32mexample_topic\033[0m
 \033[32mhttps://domain.com\033[0m -t|--topic \033[32mexample_topic\033[0m"""
 
-class Config(TypedDict):
-	cpu_temp_critical_timeout: int
-	cpu_temp_critical_message: str
-	cpu_temp_warning_timeout:  int
-	cpu_temp_warning_message:  str
-	cpu_temp_check_disabled:   bool
-	cpu_temp_critical:         int
-	cpu_warning_temp:          int
-	cpu_temp_zone_label:       str
-	cpu_temp_zone:             str
-	startup_notify_disabled:   bool
-	startup_notify_message:    str
-	ntfy_logs_disabled:        bool
-	update_interval:           int
-	ntfy_server_url:           str
-
 class Init:
-	def __init__(self, config: Config):
+	def __init__(self, config: cli.Config):
 		self.config           = config
 		self.ntfy             = Ntfy(config["ntfy_server_url"], config["ntfy_logs_disabled"])
 		self.monitor_cpu_temp = cpu.Tempature(self.ntfy, config["cpu_temp_zone"], config["cpu_temp_zone_label"])
@@ -62,6 +45,8 @@ class Init:
 		while True:
 			if not self.config["cpu_temp_check_disabled"]:
 				self.monitor_cpu_temp.ntfy_check()
+			if not self.config["daily_notifys_disabled"]:
+				...
 			time.sleep(self.config["update_interval"])
 
 	def __start_notify(self):
@@ -79,30 +64,17 @@ class Init:
 		self.__listen()
 
 def main():
-	cli_args = cli.Interface()
-	address  = Address(cli_args.server_address_no_topic)
+	interface      = cli.Interface()
+	interface_args = interface.cli_args
+	address        = Address(interface_args.server_address_no_topic)
+
 	if address.is_valid():
-		formatted_address = address.format(cli_args.topic)
+		formatted_address = address.format(interface_args.topic)
 		print(Prompt.start(formatted_address))
 
-		Init({
-			"cpu_temp_critical_timeout": cli_args.cpu_temp_critical_timeout,
-			"cpu_temp_critical_message": cli_args.cpu_temp_critical_message,
-			"cpu_temp_warning_timeout":  cli_args.cpu_temp_warning_timeout,
-			"cpu_temp_warning_message":  cli_args.cpu_temp_warning_message,
-			"cpu_temp_check_disabled":   cli_args.disable_cpu_temp,
-			"cpu_temp_critical":         cli_args.cpu_temp_critical,
-			"cpu_warning_temp":          cli_args.cpu_temp_warning,
-			"cpu_temp_zone_label":       cli_args.cpu_temp_zone_label,
-			"cpu_temp_zone":             cli_args.cpu_temp_zone,
-			"startup_notify_disabled":   cli_args.disable_startup_notify,
-			"startup_notify_message":    cli_args.startup_notify_message,
-			"ntfy_logs_disabled":        cli_args.disable_ntfy_logs,
-			"update_interval":           cli_args.update_rate,
-			"ntfy_server_url":           formatted_address
-		}).start()
+		Init(interface.to_config(formatted_address)).start()
 	else:
-		print(Prompt.address_not_valid(cli_args.server_address_no_topic))
+		print(Prompt.address_not_valid(interface_args.server_address_no_topic))
 
 if __name__ == "__main__":
 	main()
