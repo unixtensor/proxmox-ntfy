@@ -1,9 +1,8 @@
 import psutil
 import time
-import math
 
+from typing  import Optional, Callable
 from print_t import print_t
-from typing  import Optional
 from ntfy    import Ntfy
 
 _init_run_critical: bool  = True
@@ -13,8 +12,7 @@ _time_now:          float = time.time()
 last_cpu_check_warning:  float = _time_now
 last_cpu_check_crticial: float = _time_now
 
-def timeout_expired(check: float, timeout: int) -> bool:
-	return (time.time() - check) > timeout
+timeout_expired: Callable[[float, int], bool] = lambda c, t: (time.time() - c) > t
 
 class Tempature:
 	timeout_check_critical: int = 600 # Seconds
@@ -43,7 +41,8 @@ class Tempature:
 			global last_cpu_check_warning
 			global last_cpu_check_crticial
 
-			cpu_temp = math.floor(cpu_temp)
+			cpu_temp = int(cpu_temp)
+
 			if cpu_temp >= Tempature.thermal_warn_c and (_init_run_warning or timeout_expired(last_cpu_check_warning, Tempature.timeout_check_warn)):
 				_init_run_warning = False
 				last_cpu_check_warning = time.time()
@@ -53,4 +52,4 @@ class Tempature:
 				last_cpu_check_crticial = time.time()
 				self.ntfy.send(message=f"{cpu_temp} C", title=Tempature.critical_message)
 		else:
-			print_t("\033[31mCannot get a feasible tempature value for the CPU. (lm-sensors)\033[0m")
+			print_t(f"\033[31mCannot get a feasible tempature value for the CPU. cpu_temp_zone={self.cpu_temp_zone} cpu_temp_zone_label={self.cpu_temp_zone_label}\033[0m")
